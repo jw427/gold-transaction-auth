@@ -1,10 +1,15 @@
 package com.wanted.gold.user.config;
 
+import com.wanted.gold.user.domain.UserDetail;
+import com.wanted.gold.user.service.UserDetailService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -18,6 +23,8 @@ public class TokenProvider {
     private long accessTokenValidTime;
     @Value("${REFRESH_TOKEN_EXPIRATION}")
     private long RefreshTokenValidTime;
+
+    private final UserDetailService userDetailService;
 
     // 토큰 생성
     public String createToken(String username, String type) {
@@ -45,6 +52,25 @@ public class TokenProvider {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    // 토큰으로 인증 정보 담은 Authentication 반환
+    public Authentication getAuthentication(String token) {
+        UserDetail userDetail = (UserDetail) userDetailService.loadUserByUsername(getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetail, "", userDetail.getAuthorities());
+        /* principal : 인증된 사용자 정보
+           credentials : 사용자의 인증 자격 증명 (인증 완료된 상태이므로 빈 문자열 사용)
+           authorities : 사용자의 권한목록 */
+    }
+
+    // 토큰에서 username 추출
+    public String getUsername(String token) {
+        try {
+            // JWT를 파싱해서 JWT 서명 검증 후 클레임을 반환하여 payload에서 subject 클레임 추출
+            return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
         }
     }
 }
