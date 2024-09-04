@@ -6,6 +6,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,8 @@ public class TokenProvider {
     private long accessTokenValidTime;
     @Value("${REFRESH_TOKEN_EXPIRATION}")
     private long RefreshTokenValidTime;
+
+    private final String BEARER_PREFIX = "Bearer ";
 
     private final UserDetailService userDetailService;
 
@@ -72,5 +75,15 @@ public class TokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims().getSubject();
         }
+    }
+
+    // Header에서 토큰 가져오는 메서드
+    public String resolveToken(HttpServletRequest request) {
+        // Header의 Authorization 값 가져오기
+        String header = request.getHeader("Authorization");
+        // header 값이 null이 아니고 BEARER_PREFIX 값으로 시작하면 BEARER_PREFIX 이후의 값으로 반환
+        if (header != null && header.startsWith(BEARER_PREFIX))
+            return header.substring(BEARER_PREFIX.length());
+        return null;
     }
 }
