@@ -5,11 +5,13 @@ import com.wanted.gold.exception.ErrorCode;
 import com.wanted.gold.exception.UnauthorizedException;
 import com.wanted.gold.user.config.TokenProvider;
 import com.wanted.gold.user.domain.Role;
+import com.wanted.gold.user.domain.Token;
 import com.wanted.gold.user.domain.User;
 import com.wanted.gold.user.dto.SignUpRequestDto;
 import com.wanted.gold.user.dto.SignUpResponseDto;
 import com.wanted.gold.user.dto.UserLoginRequestDto;
 import com.wanted.gold.user.dto.UserLoginResponseDto;
+import com.wanted.gold.user.repository.TokenRepository;
 import com.wanted.gold.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
@@ -49,7 +52,10 @@ public class UserService {
         // password 일치여부
         if(!passwordEncoder.matches(requestDto.password(), user.getPassword()))
             throw new UnauthorizedException(ErrorCode.LOGIN_FAILED);
+        // refreshToken 발급 및 DB 저장
+        String refreshToken = tokenProvider.createRefreshToken();
+        tokenRepository.save(new Token(refreshToken, user));
         // 회원 인증 후 accessToken 발급
-        return new UserLoginResponseDto(user.getUserId(), tokenProvider.createAccessToken(requestDto.username()));
+        return new UserLoginResponseDto(user.getUserId(), tokenProvider.createAccessToken(requestDto.username()), refreshToken);
     }
 }

@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-public record UserLoginResponseDto(UUID userId, String token) {
+public record UserLoginResponseDto(UUID userId, String accessToken, String refreshToken) {
 }
