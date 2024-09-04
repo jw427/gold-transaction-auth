@@ -3,6 +3,7 @@ package com.wanted.gold.user.service;
 import com.wanted.gold.exception.BadRequestException;
 import com.wanted.gold.exception.ErrorCode;
 import com.wanted.gold.exception.UnauthorizedException;
+import com.wanted.gold.user.config.TokenProvider;
 import com.wanted.gold.user.domain.Role;
 import com.wanted.gold.user.domain.User;
 import com.wanted.gold.user.dto.SignUpRequestDto;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     // 회원가입
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
@@ -47,6 +49,7 @@ public class UserService {
         // password 일치여부
         if(!passwordEncoder.matches(requestDto.password(), user.getPassword()))
             throw new UnauthorizedException(ErrorCode.LOGIN_FAILED);
-        return new UserLoginResponseDto(user.getUserId(), "token");
+        // 회원 인증 후 accessToken 발급
+        return new UserLoginResponseDto(user.getUserId(), tokenProvider.createToken(requestDto.username(), "access"));
     }
 }
