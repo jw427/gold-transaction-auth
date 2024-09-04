@@ -50,6 +50,6 @@ public class UserService {
         if(!passwordEncoder.matches(requestDto.password(), user.getPassword()))
             throw new UnauthorizedException(ErrorCode.LOGIN_FAILED);
         // 회원 인증 후 accessToken 발급
-        return new UserLoginResponseDto(user.getUserId(), tokenProvider.createToken(requestDto.username(), "access"));
+        return new UserLoginResponseDto(user.getUserId(), tokenProvider.createAccessToken(requestDto.username()));
     }
 }

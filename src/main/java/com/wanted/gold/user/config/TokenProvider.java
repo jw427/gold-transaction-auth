@@ -23,25 +23,38 @@ public class TokenProvider {
     @Value("${ACCESS_TOKEN_EXPIRATIO}")
     private long accessTokenValidTime;
     @Value("${REFRESH_TOKEN_EXPIRATION}")
-    private long RefreshTokenValidTime;
+    private long refreshTokenValidTime;
 
     private final String BEARER_PREFIX = "Bearer ";
 
     private final UserDetailService userDetailService;
 
-    // 토큰 생성
-    public String createToken(String username, String type) {
+    // accessToken 생성
+    public String createAccessToken(String username) {
         // 현재 시간
         Date now = new Date();
-        // token 타입이 access일 경우 accessToken 만료기간, refresh일 경우 refreshToken 만료기간
-        long time = type.equals("access") ? accessTokenValidTime : RefreshTokenValidTime;
+
         // token 생성
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // 헤더 타입
                 .setClaims(Jwts.claims()
                         .setSubject(username) // 내용 sub : username
                         .setIssuedAt(now) // 내용 iat : 현재 시간
-                        .setExpiration(new Date(now.getTime() + time)) // 내용 exp : 만료 시간
+                        .setExpiration(new Date(now.getTime() + accessTokenValidTime)) // 내용 exp : 만료 시간
+                )
+                .signWith(SignatureAlgorithm.HS256, key)
+                .compact();
+    }
+
+    // refreshToken 생성 - 회원 정보 포함 X
+    public String createRefreshToken() {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setClaims(Jwts.claims()
+                        .setIssuedAt(now)
+                        .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 )
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
