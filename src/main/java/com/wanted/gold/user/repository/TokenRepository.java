@@ -7,8 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TokenRepository extends JpaRepository<Token, Long> {
-    // 리프레시 토큰으로 Token 객체 찾기
-    Optional<Token> findByRefreshToken(String refreshToken);
     // 리프레시 토큰과 회원의 식별번호로 Token 객체 찾기
     Optional<Token> findByRefreshTokenAndUser_UserId(String refreshToken, UUID userId);
 }
