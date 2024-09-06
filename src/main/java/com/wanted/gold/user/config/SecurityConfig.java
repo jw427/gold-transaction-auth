@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/users/**").permitAll() // 어떤 사용자든 접근 가능
+                        .requestMatchers("/api/tokens/access-token").permitAll() // 액세스 토큰 재발급
                         .anyRequest().authenticated()) // 인증 필요
                 .exceptionHandling(e -> e
                         // 인증 되지 않은 채로 인증 필요한 페이지 접근했을 경우

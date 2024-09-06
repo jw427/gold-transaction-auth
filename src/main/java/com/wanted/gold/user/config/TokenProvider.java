@@ -20,7 +20,7 @@ import java.util.Date;
 public class TokenProvider {
     @Value("${JWT_SECRET_KEY}")
     private String key;
-    @Value("${ACCESS_TOKEN_EXPIRATIO}")
+    @Value("${ACCESS_TOKEN_EXPIRATION}")
     private long accessTokenValidTime;
     @Value("${REFRESH_TOKEN_EXPIRATION}")
     private long refreshTokenValidTime;
