@@ -1,13 +1,12 @@
 package com.wanted.gold.user.service;
 
-import com.wanted.gold.exception.ErrorCode;
-import com.wanted.gold.exception.NotFoundException;
-import com.wanted.gold.exception.UnauthorizedException;
+import com.wanted.gold.exception.*;
 import com.wanted.gold.grpc.AuthProto;
 import com.wanted.gold.grpc.AuthRequest;
 import com.wanted.gold.grpc.AuthResponse;
 import com.wanted.gold.grpc.AuthServiceGrpc;
 import com.wanted.gold.user.config.TokenProvider;
+import com.wanted.gold.user.domain.Role;
 import com.wanted.gold.user.domain.User;
 import com.wanted.gold.user.repository.UserRepository;
 import io.grpc.Context;
@@ -42,14 +41,23 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
                     .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
             // user의 userId
             UUID userId = user.getUserId();
+            // user의 role
+            Role role = user.getRole();
             // 응답 생성
             AuthResponse response = AuthResponse.newBuilder()
                     // UUID를 문자열로 변환하여 설정
                     .setUserId(userId.toString())
+                    .setRole(role.toString())
                     .build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-        } catch (Exception e) {
+        } catch (UnauthorizedException e) { // 401
+            responseObserver.onError(Status.UNAUTHENTICATED.withDescription(e.getMessage()).asRuntimeException());
+        } catch (NotFoundException e) { // 404
+            responseObserver.onError(Status.NOT_FOUND.withDescription(e.getMessage()).asRuntimeException());
+        } catch (BadRequestException e) { // 400
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription(e.getMessage()).asRuntimeException());
+        } catch (Exception e) { // 500
             responseObserver.onError(Status.INTERNAL.withDescription(e.getMessage()).asRuntimeException());
         }
     }
