@@ -32,7 +32,7 @@ public class SecurityConfig {
                 // 세션 미사용
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/users/**").permitAll() // 어떤 사용자든 접근 가능
+                        .requestMatchers("/api/users/sign-up", "/api/users/login").permitAll() // 어떤 사용자든 접근 가능
                         .requestMatchers("/api/tokens/access-token").permitAll() // 액세스 토큰 재발급
                         .anyRequest().authenticated()) // 인증 필요
                 .exceptionHandling(e -> e
