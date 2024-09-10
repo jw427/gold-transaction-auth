@@ -1,9 +1,6 @@
 package com.wanted.gold.exception.handler;
 
-import com.wanted.gold.exception.BadRequestException;
-import com.wanted.gold.exception.ErrorResponse;
-import com.wanted.gold.exception.NotFoundException;
-import com.wanted.gold.exception.UnauthorizedException;
+import com.wanted.gold.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +24,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(e.getErrorCode(), e.getErrorCode().getMessage()));
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(e.getErrorCode(), e.getErrorCode().getMessage()));
     }
 }

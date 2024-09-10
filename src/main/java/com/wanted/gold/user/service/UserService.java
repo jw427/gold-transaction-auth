@@ -24,9 +24,12 @@ public class UserService {
     private final TokenRepository tokenRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final UserValidator userValidator;
 
     // 회원가입
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
+        // username과 password 검증
+        userValidator.validateRequest(requestDto);
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(requestDto.password());
         // User 생성
