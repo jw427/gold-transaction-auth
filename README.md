@@ -330,4 +330,30 @@ src
 ## 💌 API 명세 <a id="api-명세"></a>
 ### 👉 [자원 서버 API 명세](https://documenter.getpostman.com/view/29531239/2sAXqmAQkQ)
 ### 👉 [인증 서버 API 명세](https://documenter.getpostman.com/view/29531239/2sAXqmA5Lp)
+<details>
+<summary>
+  
+#### 🔗 Swagger API 문서
+  
+</summary>
+<div markdown="1">
+<ul>
+<div>
+  
+#### 서버 실행 후 접속 가능합니다.
+  
+</div>
+<div>
+  
+  #### 👉 [자원 서버 Swagger API 문서](http://localhost:9999/swagger-ui/index.html#)
+  
+</div>
+<div>
+  
+  #### 👉 [인증 서버 Swagger API 문서](http://localhost:8888/swagger-ui/index.html#)
+  
+</div>
+</ul>
+</div>
+</details>
 </br>
