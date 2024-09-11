@@ -28,7 +28,9 @@ public class UserController {
 
     // 회원가입
     @PostMapping("/sign-up")
-    @Operation(summary = "회원가입", description = "회원가입 시 사용하는 API")
+    @Operation(summary = "회원가입", description = "회원가입 시 사용하는 API\n" +
+            "1. 계정명은 6자리 이상 20자리 이하의 영문 소문자, 숫자, 언더바(_)로 구성되어야 합니다. 숫자만 사용할 수 없습니다.\n" +
+            "2. 비밀번호는 10자리 이상으로 소문자, 숫자, 특수문자가 모두 포함되어야 합니다. 특수문자는 특수문자는 !@#$%^&*만 가능합니다.")
     @ApiResponse(responseCode = "201", description = "Created",
             content = {@Content(schema = @Schema(implementation = SignUpResponseDto.class))})
     public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
